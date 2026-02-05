@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> LUNAR Running </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap');
+        body { font-family: 'Kanit', sans-serif; scroll-behavior: smooth; }
+        .glass-morphism { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(10px); }
+        .milestone-card { transition: all 0.3s ease; border: 2px solid transparent; }
+        .milestone-card.achieved { border-color: #ec4899; background-color: #fdf2f8; }
+        .sunsilk-gradient { background: linear-gradient(135deg, #f472b6 0%, #db2777 100%); }
+        .sunsilk-text { color: #db2777; }
+        .btn-sunsilk { background: linear-gradient(to right, #fb7185, #f43f5e); }
+        .btn-sunsilk:hover { background: linear-gradient(to right, #f43f5e, #e11d48); }
+    </style>
+</head>
+<body class="bg-pink-50 text-slate-800">
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-pink-100">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold sunsilk-text flex items-center gap-2">
+                <i class="fas fa-running"></i> LUNAR Running
+            </div>
+            <div id="user-info" class="text-sm font-medium text-pink-600 bg-pink-50 px-4 py-2 rounded-full">
+                กำลังโหลดข้อมูลผู้ใช้...
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        <!-- Dashboard Stats -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-white p-6 rounded-3xl shadow-md border border-pink-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center text-xl">
+                    <i class="fas fa-route"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-sm font-medium">ระยะทางรวมของคุณ</p>
+                    <h3 id="user-total-dist" class="text-2xl font-bold sunsilk-text">0.00 กม.</h3>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-3xl shadow-md border border-pink-100 flex items-center gap-4">
+                <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center text-xl">
+                    <i class="fas fa-fire"></i>
+                </div>
+                <div>
+                    <p class="text-slate-500 text-sm font-medium">เป้าหมายถัดไป (Milestone)</p>
+                    <h3 id="next-milestone" class="text-2xl font-bold text-rose-600">10 กม.</h3>
+                </div>
+            </div>
+            <div class="rounded-3xl shadow-lg flex items-center justify-center text-white sunsilk-gradient">
+                <button onclick="toggleModal('submit-modal')" class="w-full h-full py-6 flex items-center justify-center gap-2 font-bold text-lg">
+                    <i class="fas fa-plus-circle"></i> ส่งผลการวิ่งใหม่
+                </button>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Column: Milestones & Feed -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Milestones -->
+                <section>
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2 sunsilk-text">
+                        <i class="fas fa-trophy"></i> ไมล์สโตนความสำเร็จ
+                    </h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div id="ms-10" class="milestone-card border p-4 rounded-2xl text-center bg-white shadow-sm">
+                            <div class="text-2xl mb-1">🌸</div>
+                            <p class="font-bold">3 กม.</p>
+                            <p class="text-xs text-pink-400">Sweet Pink</p>
+                        </div>
+                        <div id="ms-50" class="milestone-card border p-4 rounded-2xl text-center bg-white shadow-sm opacity-50">
+                            <div class="text-2xl mb-1">💖</div>
+                            <p class="font-bold">5 กม.</p>
+                            <p class="text-xs text-pink-400">Lovely Runner</p>
+                        </div>
+                        <div id="ms-100" class="milestone-card border p-4 rounded-2xl text-center bg-white shadow-sm opacity-50">
+                            <div class="text-2xl mb-1">✨</div>
+                            <p class="font-bold">10 กม.</p>
+                            <p class="text-xs text-pink-400">Shining Star</p>
+                        </div>
+                        <div id="ms-500" class="milestone-card border p-4 rounded-2xl text-center bg-white shadow-sm opacity-50">
+                            <div class="text-2xl mb-1">👑</div>
+                            <p class="font-bold">50 กม.</p>
+                            <p class="text-xs text-pink-400">Pink Queen</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Activity Feed -->
+                <section>
+                    <h2 class="text-xl font-bold mb-4 sunsilk-text">กิจกรรมล่าสุดในชุมชน</h2>
+                    <div id="activity-feed" class="space-y-4">
+                        <div class="text-center py-10 text-pink-300">กำลังโหลดกิจกรรม...</div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: Leaderboard -->
+            <aside>
+                <div class="bg-white rounded-3xl shadow-md border border-pink-100 p-6 sticky top-24">
+                    <h2 class="text-xl font-bold mb-6 flex items-center gap-2 sunsilk-text">
+                        <i class="fas fa-list-ol"></i> อันดับยายเดือนนักวิ่ง
+                    </h2>
+                    <div id="leaderboard-list" class="space-y-4">
+                        <div class="text-center py-4 text-pink-300">กำลังโหลดอันดับ...</div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Copyright Footer -->
+        <footer class="mt-16 py-8 border-t border-pink-200 text-center">
+            <p class="text-pink-400 text-sm font-medium">
+                &copy; 2026 Copyright by บอตลาดต้นตาล
+            </p>
+        </footer>
+    </main>
+
+    <!-- Submit Run Modal -->
+    <div id="submit-modal" class="fixed inset-0 z-[100] hidden bg-pink-900/40 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl overflow-hidden shadow-2xl border border-pink-100">
+            <div class="p-6 border-b border-pink-50 flex justify-between items-center sunsilk-gradient text-white">
+                <h3 class="text-xl font-bold">บันทึกผลการวิ่ง</h3>
+                <button onclick="toggleModal('submit-modal')" class="text-white/80 hover:text-white text-2xl">&times;</button>
+            </div>
+            <form id="run-form" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-pink-600">ระยะทาง (กิโลเมตร)</label>
+                    <input type="number" id="run-dist" step="0.01" required placeholder="เช่น 5.25" class="w-full p-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-pink-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-pink-600">ชื่อผู้วิ่ง (Display Name)</label>
+                    <input type="text" id="run-name" required placeholder="ชื่อของคุณ" class="w-full p-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-pink-400 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-pink-600">รูปหลักฐาน (Link รูปภาพ)</label>
+                    <input type="text" id="run-proof" placeholder="https://..." class="w-full p-3 border border-pink-200 rounded-xl focus:ring-2 focus:ring-pink-400 outline-none">
+                </div>
+                <button type="submit" id="submit-btn" class="w-full btn-sunsilk text-white font-bold py-3 rounded-xl shadow-md transition transform active:scale-95">
+                    ยืนยันการส่งผล
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, onSnapshot, query, addDoc, serverTimestamp, updateDoc, increment } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const firebaseConfig = JSON.parse(__firebase_config);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'running-hub-pink';
+
+        let currentUser = null;
+
+        const initAuth = async () => {
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                await signInWithCustomToken(auth, __initial_auth_token);
+            } else {
+                await signInAnonymously(auth);
+            }
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('user-info').innerText = `Runner: ${user.uid.substring(0, 8)}`;
+                setupRealtimeListeners();
+            }
+        });
+
+        initAuth();
+
+        const getPublicDataPath = (col) => collection(db, 'artifacts', appId, 'public', 'data', col);
+
+        window.toggleModal = (id) => {
+            const el = document.getElementById(id);
+            el.classList.toggle('hidden');
+        };
+
+        document.getElementById('run-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUser) return;
+
+            const dist = parseFloat(document.getElementById('run-dist').value);
+            const name = document.getElementById('run-name').value;
+            const proof = document.getElementById('run-proof').value || "No proof";
+            const submitBtn = document.getElementById('submit-btn');
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = "กำลังบันทึก...";
+
+            try {
+                await addDoc(getPublicDataPath('runs'), {
+                    userId: currentUser.uid,
+                    userName: name,
+                    distance: dist,
+                    proof: proof,
+                    timestamp: serverTimestamp()
+                });
+
+                const userRef = doc(db, 'artifacts', appId, 'public', 'data', 'leaderboard', currentUser.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    await updateDoc(userRef, {
+                        totalDistance: increment(dist),
+                        userName: name,
+                        lastRun: serverTimestamp()
+                    });
+                } else {
+                    await setDoc(userRef, {
+                        userId: currentUser.uid,
+                        userName: name,
+                        totalDistance: dist,
+                        lastRun: serverTimestamp()
+                    });
+                }
+
+                toggleModal('submit-modal');
+                document.getElementById('run-form').reset();
+            } catch (error) {
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = "ยืนยันการส่งผล";
+            }
+        });
+
+        function setupRealtimeListeners() {
+            onSnapshot(getPublicDataPath('leaderboard'), (snapshot) => {
+                const runners = [];
+                snapshot.forEach(doc => runners.push(doc.data()));
+                runners.sort((a, b) => b.totalDistance - a.totalDistance);
+                renderLeaderboard(runners);
+                updateUserStats(runners.find(r => r.userId === currentUser.uid));
+            });
+
+            onSnapshot(getPublicDataPath('runs'), (snapshot) => {
+                const runs = [];
+                snapshot.forEach(doc => runs.push({id: doc.id, ...doc.data()}));
+                runs.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+                renderFeed(runs);
+            });
+        }
+
+        function renderLeaderboard(runners) {
+            const list = document.getElementById('leaderboard-list');
+            list.innerHTML = runners.slice(0, 10).map((r, index) => `
+                <div class="flex items-center justify-between p-3 ${r.userId === currentUser.uid ? 'bg-pink-100 border border-pink-200' : 'bg-pink-50/30'} rounded-xl">
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-pink-300 w-6">${index + 1}</span>
+                        <div>
+                            <p class="font-bold text-sm text-pink-900">${r.userName}</p>
+                            <p class="text-xs text-pink-500">${r.totalDistance.toFixed(2)} กม.</p>
+                        </div>
+                    </div>
+                    ${index === 0 ? '🏆' : ''}
+                </div>
+            `).join('');
+        }
+
+        function renderFeed(runs) {
+            const feed = document.getElementById('activity-feed');
+            feed.innerHTML = runs.slice(0, 5).map(run => `
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-pink-50 flex justify-between items-center border-l-4 border-l-pink-500">
+                    <div class="flex gap-4 items-center">
+                        <div class="w-10 h-10 bg-pink-50 rounded-full flex items-center justify-center text-lg">🏃‍♀️</div>
+                        <div>
+                            <p class="font-bold text-pink-900">${run.userName} <span class="text-pink-600">วิ่งเพิ่ม ${run.distance} กม.</span></p>
+                            <p class="text-xs text-pink-300">${run.timestamp ? new Date(run.timestamp.seconds * 1000).toLocaleString('th-TH') : 'เมื่อครู่'}</p>
+                        </div>
+                    </div>
+                    ${run.proof.startsWith('http') ? 
+                        `<a href="${run.proof}" target="_blank" class="text-xs bg-pink-100 text-pink-600 px-3 py-1 rounded-full hover:bg-pink-200">หลักฐาน</a>` : ''
+                    }
+                </div>
+            `).join('');
+        }
+
+        function updateUserStats(userData) {
+            if (!userData) return;
+            const total = userData.totalDistance || 0;
+            document.getElementById('user-total-dist').innerText = `${total.toFixed(2)} กม.`;
+            
+            const milestones = [10, 50, 100, 500];
+            let next = milestones.find(m => m > total) || "สำเร็จทุกเป้าหมาย!";
+            document.getElementById('next-milestone').innerText = isNaN(next) ? next : `${next} กม.`;
+
+            milestones.forEach(m => {
+                const card = document.getElementById(`ms-${m}`);
+                if (total >= m) {
+                    card.classList.add('achieved');
+                    card.classList.remove('opacity-50');
